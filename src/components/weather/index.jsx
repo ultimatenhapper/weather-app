@@ -2,14 +2,14 @@ import React, { useEffect, useState } from "react";
 import Search from "../search";
 
 function Weather() {
-  const [search, setSearch] = useState("");
+  const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [search, setSearch] = useState("");
   const [weatherData, setWeatherData] = useState([]);
 
   const fetchWeatherData = async (params) => {
     try {
       setLoading(true);
-
       if (!process.env.REACT_APP_OPENWEATHER_API_KEY) {
         throw new Error("OpenWeather API key is not defined.");
       }
@@ -23,14 +23,16 @@ function Weather() {
         console.log(data);
         setWeatherData(data);
       }
-    } catch (error) {
+    } catch (err) {
       setLoading(false);
-      console.log(error);
+      setError(err);
+      console.log(err);
     }
   };
 
   const handleSearch = () => {
     fetchWeatherData(search);
+    setSearch("");
   };
 
   function kelvinACelsius(kelvin) {
@@ -38,7 +40,7 @@ function Weather() {
   }
 
   useEffect(() => {
-    fetchWeatherData("Viveiro");
+    fetchWeatherData("Santiago de Compostela");
   }, []);
 
   const getCurrentDate = () => {
@@ -49,6 +51,8 @@ function Weather() {
       year: "numeric",
     });
   };
+
+  if (error) return <h3>An error occurred {error.message}. Try again</h3>;
 
   return (
     <div>
